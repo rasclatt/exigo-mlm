@@ -5,23 +5,27 @@ use \GuzzleHttp\Client as Guzzle;
 
 class Model
 {
+    public const AUTH_DEF = 'Basic';
+    public const AUTH_BEARER = 'Bearer';
     private Guzzle $http;
     public static string $cacheDirectory;
     private string $exigo_host = '-api.exigo.com';
     private string $version = '3.0';
     protected string $baseService;
     private string $service;
+    private string $auth_type;
     private $body;
     private $endpoint;
     /**
      *	@description	
-     *	@param	
+     *	@param	$auth_type [string|void]    Use object::AUTH_DEF or object::AUTH_BEARER. Currently default is Basic 
      */
-    public function __construct()
+    public function __construct(string $auth_type = null)
     {
         $this->http = new Guzzle();
         # Set an initial endpoint
         $this->setEndpoint(EXIGO_API_COMPANY_NAME);
+        $this->auth_type = (empty($auth_type))? self::AUTH_DEF : $auth_type;
     }
     /**
      *	@description	
@@ -107,7 +111,7 @@ class Model
     {
         $headers = [
             'headers' => [
-                'Authorization' => "Basic " . EXIGO_APIKEY,
+                'Authorization' => implode(' ', [ $this->auth_type, EXIGO_APIKEY ]),
                 'Content-Type' => 'application/json'
             ]
         ];
@@ -115,7 +119,7 @@ class Model
         return @json_decode($this->http
             ->request(
                 $type,
-                $this->getEndpoint().'/'.$this->version,
+                $this->getEndpoint(),
                 (in_array(strtolower($type), ['get','delete'])? $headers : array_merge($headers, [ 'json' => $this->body ])))
             ->getBody()
             ->getContents(), 1);
@@ -126,7 +130,7 @@ class Model
      */
     private function getEndpoint()
     {
-        return rtrim($this->endpoint, '/').'/'.ltrim($this->service, '/');
+        return rtrim($this->endpoint, '/').'/'.$this->version.'/'.ltrim($this->service, '/');
     }
     /**
      *	@description	
@@ -225,6 +229,6 @@ class Model
     {
         if($body instanceof \SmartDto\Dto)
             $body = $body->toArray();
-        return $this->setService("{$this->baseService}/permissions".(!empty($body)? $this->toQueryString($body) : ''))->get();
+        return $this->setService($service.(!empty($body)? $this->toQueryString($body) : ''))->get();
     }
 }

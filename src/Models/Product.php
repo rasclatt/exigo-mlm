@@ -17,4 +17,12 @@ class Product extends \Exigo\Model
     {
         return new CreateResponse($this->toGet($this->baseService, array_filter($request->toArray())));
     }
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function getItems(): array
+    {
+        return $this->toGet($this->baseService, ['currencyCode'=>'usd']);
+    }
 }
