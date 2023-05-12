@@ -1,5 +1,5 @@
 {
-    "name": "exigo-mlm",
+    "name": "rasclatt/exigo-mlm",
     "type": "library",
     "description": "SDK for the Exigo API.",
     "keywords": ["Exigo","php","SDK","mlm","exigo-mlm"],
