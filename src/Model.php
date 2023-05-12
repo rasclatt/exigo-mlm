@@ -109,20 +109,65 @@ class Model
      */
     private function transmit(string $type)
     {
-        $headers = [
-            'headers' => [
-                'Authorization' => implode(' ', [ $this->auth_type, EXIGO_APIKEY ]),
-                'Content-Type' => 'application/json'
-            ]
+        $data = [
+            implode(' ', [ $this->auth_type, EXIGO_APIKEY ]),
+            'https://'.$this->getEndpoint(),
+            $this->body,
+            strtoupper($type)
         ];
-        
-        return @json_decode($this->http
-            ->request(
-                $type,
-                $this->getEndpoint(),
-                (in_array(strtolower($type), ['get','delete'])? $headers : array_merge($headers, [ 'json' => $this->body ])))
-            ->getBody()
-            ->getContents(), 1);
+        return $this->curl(...$data);
+    }
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function curl(
+        string $apikey,
+        string $url,
+        array $data = null,
+        string $method = 'GET'
+    )
+    {
+        # Initialize
+        $ch = curl_init();
+        # Add some base options
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        # Do post
+        if (in_array($method, ['POST', 'PATCH'])) {
+            // Convert the data to JSON
+            $json_data = json_encode($data);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Content-Length: ' . strlen($json_data)
+            ]);
+        } else {
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: ' . $apikey
+            ]);
+        }
+        # Execute the cURL session
+        $response = curl_exec($ch);
+        # Check for errors
+        if (curl_errno($ch)) {
+        $error_msg = curl_error($ch);
+        curl_close($ch);
+            throw new \Exception("cURL error: {$error_msg}");
+        }
+        # Close the cURL session
+        curl_close($ch);
+        # Send back results with decode
+        $response = @json_decode($response, 1);
+        # If there is some problem
+        if(!empty($response['message']))
+            throw new \Exception(trim($response['message']), 500);
+        # Send back response
+        return $response;
     }
     /**
      *	@description	
