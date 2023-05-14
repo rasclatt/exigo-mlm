@@ -7,11 +7,11 @@ class Model
 {
     public const AUTH_DEF = 'Basic';
     public const AUTH_BEARER = 'Bearer';
-    private Guzzle $http;
     public static string $cacheDirectory;
+    protected string $baseService;
+    private Guzzle $http;
     private string $exigo_host = '-api.exigo.com';
     private string $version = '3.0';
-    protected string $baseService;
     private string $service;
     private string $auth_type;
     private $body;

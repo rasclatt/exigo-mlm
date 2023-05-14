@@ -4,7 +4,7 @@ namespace Exigo\Dto\Product\GetItems;
 
 class KitMemberItemResponse extends \SmartDto\Dto
 {
-    public ?string $ItemCode = null;
-    public ?string $Description = null;
-    public $InventoryStatus  = null;
+    public ?string $itemCode = null;
+    public ?string $description = null;
+    public $inventoryStatus  = null;
 }

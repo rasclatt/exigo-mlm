@@ -8,65 +8,65 @@ use \Exigo\Dto\Product\GetItems\ {
 
 class Item extends \Exigo\Dto\Response
 {
-    public ?string $ItemCode = '';
-    public ?string $Description = '';
-    public ?float $Price = 0;
-    public ?float $Weight = 0;
-    public ?float $CommissionableVolume = 0;
-    public ?float $BusinessVolume = 0;
-    public ?float $Other1Price = 0;
-    public ?float $Other2Price = 0;
-    public ?float $Other3Price = 0;
-    public ?float $Other4Price = 0;
-    public ?float $Other5Price = 0;
-    public ?float $Other6Price = 0;
-    public ?float $Other7Price = 0;
-    public ?float $Other8Price = 0;
-    public ?float $Other9Price = 0;
-    public ?float $Other10Price = 0;
-    public ?string $Category = '';
-    public ?int $CategoryID = null;
-    public ?string $TinyPicture = '';
-    public ?string $SmallPicture = '';
-    public ?string $LargePicture = '';
-    public ?string $ShortDetail = '';
-    public ?string $ShortDetail2 = '';
-    public ?string $ShortDetail3 = '';
-    public ?string $ShortDetail4 = '';
-    public ?string $LongDetail = '';
-    public ?string $LongDetail2 = '';
-    public ?string $LongDetail3 = '';
-    public ?string $LongDetail4 = '';
-    public $InventoryStatus = null;
-    public ?int $StockLevel = null;
-    public ?int $AvailableStockLevel = null;
-    public ?int $MaxAllowedOnOrder = null;
-    public ?string $Field1 = '';
-    public ?string $Field2 = '';
-    public ?string $Field3 = '';
-    public ?string $Field4 = '';
-    public ?string $Field5 = '';
-    public ?string $Field6 = '';
-    public ?string $Field7 = '';
-    public ?string $Field8 = '';
-    public ?string $Field9 = '';
-    public ?string $Field10 = '';
-    public ?bool $OtherCheck1 = null;
-    public ?bool $OtherCheck2 = null;
-    public ?bool $OtherCheck3 = null;
-    public ?bool $OtherCheck4 = null;
-    public ?bool $OtherCheck5 = null;
-    public ?bool $IsVirtual = null;
-    public ?bool $AllowOnAutoOrder = null;
-    public ?bool $IsGroupMaster = null;
-    public ?string $GroupDescription = '';
-    public ?string $GroupMembersDescription = '';
-    public ?array $GroupMembers = [];
-    public ?bool $IsDynamicKitMaster = null;
-    public ?bool $HideFromSearch = null;
-    public ?array $KitMembers = [];
-    public ?float $TaxablePrice = 0;
-    public ?float $ShippingPrice = 0;
+    public ?string $itemCode = '';
+    public ?string $description = '';
+    public ?float $price = 0;
+    public ?float $weight = 0;
+    public ?float $commissionableVolume = 0;
+    public ?float $businessVolume = 0;
+    public ?float $other1Price = 0;
+    public ?float $other2Price = 0;
+    public ?float $other3Price = 0;
+    public ?float $other4Price = 0;
+    public ?float $other5Price = 0;
+    public ?float $other6Price = 0;
+    public ?float $other7Price = 0;
+    public ?float $other8Price = 0;
+    public ?float $other9Price = 0;
+    public ?float $other10Price = 0;
+    public ?string $category = '';
+    public ?int $categoryID = null;
+    public ?string $tinyPicture = '';
+    public ?string $smallPicture = '';
+    public ?string $largePicture = '';
+    public ?string $shortDetail = '';
+    public ?string $shortDetail2 = '';
+    public ?string $shortDetail3 = '';
+    public ?string $shortDetail4 = '';
+    public ?string $longDetail = '';
+    public ?string $longDetail2 = '';
+    public ?string $longDetail3 = '';
+    public ?string $longDetail4 = '';
+    public $inventoryStatus = null;
+    public ?int $stockLevel = null;
+    public ?int $availableStockLevel = null;
+    public ?int $maxAllowedOnOrder = null;
+    public ?string $field1 = '';
+    public ?string $field2 = '';
+    public ?string $field3 = '';
+    public ?string $field4 = '';
+    public ?string $field5 = '';
+    public ?string $field6 = '';
+    public ?string $field7 = '';
+    public ?string $field8 = '';
+    public ?string $field9 = '';
+    public ?string $field10 = '';
+    public ?bool $otherCheck1 = null;
+    public ?bool $otherCheck2 = null;
+    public ?bool $otherCheck3 = null;
+    public ?bool $otherCheck4 = null;
+    public ?bool $otherCheck5 = null;
+    public ?bool $isVirtual = null;
+    public ?bool $allowOnAutoOrder = null;
+    public ?bool $isGroupMaster = null;
+    public ?string $groupDescription = '';
+    public ?string $groupMembersDescription = '';
+    public ?array $groupMembers = [];
+    public ?bool $isDynamicKitMaster = null;
+    public ?bool $hideFromSearch = null;
+    public ?array $kitMembers = [];
+    public ?float $taxablePrice = 0;
+    public ?float $shippingPrice = 0;
 
     /**
      *	@description	
@@ -74,8 +74,8 @@ class Item extends \Exigo\Dto\Response
      */
     protected function beforeConstruct($array)
     {
-        $array['GroupMembers'] = array_map(fn($v) => new ItemMemberResponse($v), ($array['GroupMembers']?? []));
-        $array['KitMembers'] = array_map(fn($v) => new KitMemberResponse($v), ($array['KitMembers']?? []));
+        $array['groupMembers'] = array_map(fn($v) => new ItemMemberResponse($v), ($array['groupMembers']?? []));
+        $array['kitMembers'] = array_map(fn($v) => new KitMemberResponse($v), ($array['kitMembers']?? []));
         return $array;
     }
 }

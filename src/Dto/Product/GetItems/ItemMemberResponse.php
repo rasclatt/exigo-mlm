@@ -3,10 +3,10 @@ namespace Exigo\Dto\Product\GetItems;
 
 class ItemMemberResponse extends \SmartDto\Dto
 {
-    public ?string $ItemCode = null;
-    public ?string $MemberDescription = null;
-    public ?string $ItemDescription = null;
-    public $InventoryStatus = null;
-    public ?int $StockLevel = null;
-    public ?int $AvailableStockLevel = null;
+    public ?string $itemCode = null;
+    public ?string $memberDescription = null;
+    public ?string $itemDescription = null;
+    public $inventoryStatus = null;
+    public ?int $stockLevel = null;
+    public ?int $availableStockLevel = null;
 }

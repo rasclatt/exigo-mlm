@@ -5,7 +5,7 @@ use \Exigo\Dto\Product\GetItems\Item;
 
 class Response extends \SmartDto\Dto
 {
-    public array $Items = [];
+    public array $items = [];
     /**
      *	@description	
      *	@param	
