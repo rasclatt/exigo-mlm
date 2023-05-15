@@ -9,13 +9,14 @@ class Model
     public const AUTH_BEARER = 'Bearer';
     public static string $cacheDirectory;
     protected string $baseService;
-    private Guzzle $http;
     private string $exigo_host = '-api.exigo.com';
     private string $version = '3.0';
     private string $service;
     private string $auth_type;
     private $body;
     private $endpoint;
+    
+    private Guzzle $http;
     /**
      *	@description	
      *	@param	$auth_type [string|void]    Use object::AUTH_DEF or object::AUTH_BEARER. Currently default is Basic 
@@ -203,60 +204,12 @@ class Model
         return (!empty($arr))? '?'.http_build_query($arr) : '';
     }
     /**
-     *	@description	
-     *	@param	
+     *	@description	            Allow for caching of API results, ideally for products and product collections
+     *	@param	$cacheDir [string]  The root folder for the cache directory
      */
-    protected function getCached(string $name):? array
+    protected function caching(string $cacheDir): Helpers\Cache
     {
-        $path = $this->getCacheDir()."/{$name}.json";
-        return (file_exists($path))? json_decode(file_get_contents($path), 1) : null;
-    }
-    /**
-     *	@description	
-     *	@param	
-     */
-    private function getCacheDir(): string
-    {
-        return (empty(self::$cacheDirectory)? realpath('../../../'.__DIR__).'/exigo.cache' : self::$cacheDirectory);
-    }
-    /**
-     *	@description	
-     *	@param	
-     */
-    protected function cache(string $name, $data): array
-    {
-        $path = $this->getCacheDir()."/{$name}.json";
-        file_put_contents($path, json_encode($data));
-        return $data;
-    }
-    /**
-     *	@description	
-     *	@param	
-     */
-    protected function getCachedOrStore(string $name, Callable $func): array
-    {
-        $data = $this->getCached($name);
-
-        if(!empty($data))
-            return $data;
-
-        return $this->cache($name, $func());
-    }
-    /**
-     *	@description	
-     */
-    protected function trimAll($value)
-    {
-        if(is_array($value)) {
-            foreach($value as $k => $v) {
-                $value[$k] = $this->trimAll($v);
-            }
-        } else {
-            if(is_string($value)) {
-                return trim($value);
-            }
-        }
-        return $value;
+        return new Helpers\Cache($cacheDir);
     }
     /**
      *	@description	Shortcut post method to remove some DRYness
@@ -264,7 +217,7 @@ class Model
     public function toPost(string $service, $body)
     {
         return $this->setService($service)
-        ->setBody($this->trimAll(($body instanceof \SmartDto\Dto)? $body->toArray() : $body))
+        ->setBody(Helpers\ArrayWorks::trimAll(($body instanceof \SmartDto\Dto)? $body->toArray() : $body))
         ->post();
     }
     /**
@@ -274,6 +227,6 @@ class Model
     {
         if($body instanceof \SmartDto\Dto)
             $body = $body->toArray();
-        return $this->setService($service.(!empty($body)? $this->toQueryString($body) : ''))->get();
+        return $this->setService($service.(!empty($body)? $this->toQueryString(Helpers\ArrayWorks::trimAll($body)) : ''))->get();
     }
 }

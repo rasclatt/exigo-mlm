@@ -8,8 +8,14 @@ use \Exigo\Dto\Customer\ {
     GetCustomer\Response as GetCustomerResponse
 };
 
+use \Exigo\ {
+    Exception as ExigoException
+};
+
 class Customer extends \Exigo\Model
 {
+    # Set the base service path
+    protected string $baseService = '/customers';
     # These are all key name filters that can be set for looking up distributors
     public const CID = 'customerID';
     public const EID = 'enrollerID';
@@ -17,8 +23,6 @@ class Customer extends \Exigo\Model
     public const CKEY = 'customerKey';
     public const EKEY = 'enrollerKey';
     public const SKEY = 'sponsorKey';
-
-    protected string $baseService = '/customers';
     /**
      *	@description	Authenticates a distributor and returns basic information along
      *                  with the full account details (if $account TRUE)
@@ -29,11 +33,18 @@ class Customer extends \Exigo\Model
         bool $account = true
     ): AuthResponse
     {
+        # Trim and then see if anything is empty, throw error or return trimmed
+        $authCreds = ExigoException::onEmpty([
+                'loginName' => $loginName,
+                'password' => $password
+            ],
+            'Invalid username or password',
+            403,
+            # use a custom function to determine empty
+            fn(array $value): array | null => (count(array_filter($value)) !== 2)? null : $value
+        );
         # Validate the distributor
-        $auth = new AuthResponse($this->toPost("{$this->baseService}/authenticate", [
-            'loginName' => $loginName,
-            'password' => $password
-        ]));
+        $auth = new AuthResponse($this->toPost("{$this->baseService}/authenticate", $authCreds));
         # If valid and set to return account details
         if($auth->customerID && $account) {
             # Fetch the client account details
@@ -46,7 +57,12 @@ class Customer extends \Exigo\Model
      */
     public function getCustomer(int $id = null): GetCustomerResponse
     {
-        return new GetCustomerResponse($this->getCustomerBy($id, self::CID)['customers'][0]?? []);
+        return new GetCustomerResponse(
+            $this->getCustomerBy(
+                ExigoException::onEmpty($id, 'Invalid Customer Id', 500),
+                self::CID
+            )['customers'][0]?? []
+        );
     }
     /**
      *	@description	Fetches all distributors based on their sponsor id
@@ -57,7 +73,7 @@ class Customer extends \Exigo\Model
     {
         return array_map(
             fn($v) => new GetCustomerResponse($v),
-            $this->getCustomerBy($id, self::SID)
+            $this->getCustomerBy(ExigoException::onEmpty($id, 'Invalid Sponsor Id', 500), self::SID)
         );
     }
     /**
@@ -69,7 +85,10 @@ class Customer extends \Exigo\Model
     {
         return array_map(
             fn($v) => new GetCustomerResponse($v),
-            $this->getCustomerBy($id, self::EID)
+            $this->getCustomerBy(
+                ExigoException::onEmpty($id, 'Invalid Enroller Id', 500),
+                self::EID
+            )
         );
     }
     /**

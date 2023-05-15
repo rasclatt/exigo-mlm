@@ -37,7 +37,7 @@ class Product extends \Exigo\Model
             $this->tryCatch(
                 fn() => $this->toGet($this->baseService, array_filter([
                     'currencyCode' => $currencyCode,
-                    'returnLongDetail' => $returnLongDetail,
+                    'returnLongDetail' => ($returnLongDetail)? 'true' : null,
                     'priceType'=> $priceType,
                     'warehouseID' => $warehouseId,
                     'itemCodes' => $itemCodes,
