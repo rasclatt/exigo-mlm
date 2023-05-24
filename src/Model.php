@@ -2,6 +2,7 @@
 namespace Exigo;
 
 use \GuzzleHttp\Client as Guzzle;
+use Exigo\Interfaces\Database as IDatabase;
 
 class Model
 {
@@ -15,6 +16,7 @@ class Model
     private string $auth_type;
     private $body;
     private $endpoint;
+    protected IDatabase $db;
     
     private Guzzle $http;
     /**
@@ -132,32 +134,30 @@ class Model
         # Initialize
         $ch = curl_init();
         # Add some base options
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        # Do post
+        $options = [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2
+        ];
+        $headers = [
+            'Content-Type: application/json',
+            'Authorization: ' . $apikey
+        ];
         if (in_array($method, ['POST', 'PATCH'])) {
-            // Convert the data to JSON
             $json_data = json_encode($data);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($json_data)
-            ]);
-        } else {
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Authorization: ' . $apikey
-            ]);
+            $options[CURLOPT_POST] = 1;
+            $options[CURLOPT_POSTFIELDS] = $json_data;
+            $headers[] = 'Content-Length: ' . strlen($json_data);
         }
+        $options[CURLOPT_HTTPHEADER] = $headers;
+        curl_setopt_array($ch, $options);
         # Execute the cURL session
         $response = curl_exec($ch);
         # Check for errors
         if (curl_errno($ch)) {
-        $error_msg = curl_error($ch);
-        curl_close($ch);
+            $error_msg = curl_error($ch);
+            curl_close($ch);
             throw new \Exception("cURL error: {$error_msg}");
         }
         # Close the cURL session
@@ -228,5 +228,11 @@ class Model
         if($body instanceof \SmartDto\Dto)
             $body = $body->toArray();
         return $this->setService($service.(!empty($body)? $this->toQueryString(Helpers\ArrayWorks::trimAll($body)) : ''))->get();
+    }
+
+    public function connect(IDatabase $db): self
+    {
+        $this->db = $db;
+        return $this;
     }
 }

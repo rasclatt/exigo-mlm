@@ -11,5 +11,5 @@ class Response extends AuthResponse
 {
     public ?int $customerID = null;
     public ?string $customerKey = null;
-    public ?GetCustomerResponse $account = null;
+    public GetCustomerResponse $account;
 }

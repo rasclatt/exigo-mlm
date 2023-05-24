@@ -8,7 +8,10 @@ class Response extends \SmartDto\Dto
     public ?string $lastName = null;
     public ?string $company = null;
     public ?int $customerType = null;
+    public ?string $customerTypeDescription = null;
+    public ?string $customerTypeAbbrev = null;
     public ?int $customerStatus = null;
+    public bool $customerActive = false;
     public ?string $email = null;
     public ?string $phone = null;
     public ?string $phone2 = null;
@@ -66,6 +69,7 @@ class Response extends \SmartDto\Dto
     public ?int $payableType = null;
     public ?int $checkThreshold = null;
     public ?int $priceType = null;
+    public ?string $priceTypeDescription = null;
     public ?int $languageID = null;
     public ?string $gender = null;
     public ?string $salesTaxID = null;

@@ -11,6 +11,7 @@ use \Exigo\Dto\Customer\ {
 use \Exigo\ {
     Exception as ExigoException
 };
+use Exigo\Interfaces\Database as IDatabase;
 
 class Customer extends \Exigo\Model
 {
@@ -23,14 +24,14 @@ class Customer extends \Exigo\Model
     public const CKEY = 'customerKey';
     public const EKEY = 'enrollerKey';
     public const SKEY = 'sponsorKey';
+    protected IDatabase $db;
     /**
      *	@description	Authenticates a distributor and returns basic information along
      *                  with the full account details (if $account TRUE)
      */
     public function authenticate(
         string $loginName,
-        string $password,
-        bool $account = true
+        string $password
     ): AuthResponse
     {
         # Trim and then see if anything is empty, throw error or return trimmed
@@ -44,25 +45,17 @@ class Customer extends \Exigo\Model
             fn(array $value): array | null => (count(array_filter($value)) !== 2)? null : $value
         );
         # Validate the distributor
-        $auth = new AuthResponse($this->toPost("{$this->baseService}/authenticate", $authCreds));
-        # If valid and set to return account details
-        if($auth->customerID && $account) {
-            # Fetch the client account details
-            $auth->account = $this->getCustomer($auth->customerID);
-        }
-        return $auth;
+        return new AuthResponse($this->toPost("{$this->baseService}/authenticate", $authCreds));
     }
     /**
      *	@description	Fetches a customer based on filter(s)
      */
     public function getCustomer(int $id = null): GetCustomerResponse
     {
-        return new GetCustomerResponse(
-            $this->getCustomerBy(
-                ExigoException::onEmpty($id, 'Invalid Customer Id', 500),
-                self::CID
-            )['customers'][0]?? []
-        );
+        return new GetCustomerResponse($this->getCustomerBy(
+            ExigoException::onEmpty($id, 'Invalid Customer Id', 500),
+            self::CID
+        )[0]?? []);
     }
     /**
      *	@description	Fetches all distributors based on their sponsor id
@@ -94,10 +87,7 @@ class Customer extends \Exigo\Model
     /**
      *	@description	Fetches a customer based on filter(s)
      */
-    public function getCustomerBy(
-        int $value = null,
-        string $key = null
-    ): array
+    public function getCustomerBy(int $value, string $key): array
     {
         return array_map(
             fn($v) => new GetCustomerResponse($v),
@@ -110,5 +100,114 @@ class Customer extends \Exigo\Model
     public function createCustomer(CreateCustomerRequest $request): CreateCustomerResponse
     {
         return new CreateCustomerResponse($this->toPost("{$this->baseService}/authenticate", $request));
+    }
+
+    public function getByUsername(
+        string $username
+    )
+    {
+        return $this->db->query(
+            "SELECT
+                c.*,
+                CustomerTypes.CustomerTypeDescription,
+                CONCAT(c.FirstName, ' ', c.LastName) as FullName
+            FROM
+                dbo.Customers as c
+            LEFT JOIN
+                dbo.CustomerTypes ON c.CustomerTypeID = CustomerTypes.CustomerTypeID
+            WHERE
+                c.LoginName = ?", [$username])
+            ->getResults(1);
+    }
+    /**
+     * @description Fetch the customer id when passing in their LoginName
+     */
+    public function getIdFromUsername(string $username):? int
+    {
+        $id = $this->db->query(
+            "SELECT
+                CustomerID as id
+            FROM
+                dbo.Customers
+            WHERE
+                LoginName = ?", [$username])
+            ->getResults(1)['id']?? null;
+        return is_numeric($id)? (int) $id : null;
+    }
+    /**
+     * @description Fetch the customer type name from customer type id
+     */
+    public function getCustomerType(int $customerTypeID):? string
+    {
+        return $this->db->query(
+            "SELECT
+                CustomerTypeDescription
+            FROM
+                dbo.CustomerTypes
+            WHERE
+                CustomerTypeID = ?", [$customerTypeID])
+            ->getResults(1)['CustomerTypeDescription']?? null;
+    }
+    /**
+     * @description Fetch the customer type name from customer type id
+     */
+    public function getCustomerStatus(int $statusID):? string
+    {
+        return $this->db->query(
+            "SELECT
+                CustomerStatusDescription
+            FROM
+                dbo.CustomerStatuses
+            WHERE
+                CustomerStatusID = ?", [$statusID])
+            ->getResults(1)['CustomerStatusDescription']?? null;
+    }
+    /**
+     * @description Fetch the name of the price type
+     */
+    public function getCustomerPriceType(int $PriceTypeID):? string
+    {
+        return $this->db->query(
+            "SELECT
+                PriceTypeDescription as n
+            FROM
+                dbo.PriceTypes
+            WHERE
+                PriceTypeID = ?", [$PriceTypeID])
+            ->getResults(1)['n']?? null;
+    }
+    /**
+     * @description Fetch the name of the price type
+     */
+    public function getCustomerPriceTypeId(string $PriceTypeDescription):? int
+    {
+        return $this->db->query(
+            "SELECT
+                PriceTypeID as n
+            FROM
+                dbo.PriceTypes
+            WHERE
+                PriceTypeDescription = ?", [$PriceTypeDescription])
+            ->getResults(1)['n']?? null;
+    }
+    /**
+     * @description Quick check to see if the user is able to log in
+     */
+    public function canLogIn(
+        string $searchBy,
+        string $key = 'LoginName'
+    ): bool
+    {
+        return $this->db->query(
+            "SELECT
+                COUNT(*) as count
+            FROM
+                dbo.Customers
+            WHERE
+                {$key} = ?
+                    AND
+                CanLogin = 1", [ $searchBy ]
+            )
+            ->getResults(1)['count'] > 0;
     }
 }

@@ -16,9 +16,9 @@ class Request extends \SmartDto\Dto
     public ?string $country = null;
     public ?string $county = null;
     public ?int $customerID = null;
-    public ?string $details = null;
-    public ?bool $returnShipMethods = null;
+    public ?array $details = null;
+    public bool $returnShipMethods = true;
     public ?int $partyID = null;
     public ?string $customerKey = null;
-    public ?string $orderType = null;
+    public string $orderType = 'APIOrder';
 }

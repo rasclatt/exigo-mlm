@@ -3,15 +3,15 @@ namespace Exigo\Dto\Order\CalculateOrder;
 
 class Response extends \Exigo\Dto\Response
 {
-    public ?string $total = null;
-    public ?string $subTotal = null;
-    public ?string $taxTotal = null;
-    public ?string $shippingTotal = null;
-    public ?string $discountTotal = null;
-    public ?string $discountPercent = null;
-    public ?string $weightTotal = null;
-    public ?string $businessVolumeTotal = null;
-    public ?string $commissionableVolumeTotal = null;
+    public ?float $total = null;
+    public ?float $subTotal = null;
+    public ?float $taxTotal = null;
+    public ?float $shippingTotal = null;
+    public ?float $discountTotal = null;
+    public ?float $discountPercent = null;
+    public ?float $weightTotal = null;
+    public ?int $businessVolumeTotal = null;
+    public ?int $commissionableVolumeTotal = null;
     public ?string $other1Total = null;
     public ?string $other2Total = null;
     public ?string $other3Total = null;
@@ -32,13 +32,13 @@ class Response extends \Exigo\Dto\Response
     public ?string $other18 = null;
     public ?string $other19 = null;
     public ?string $other20 = null;
-    public ?string $shippingTax = null;
-    public ?string $orderTax = null;
-    public ?string $fedTaxTotal = null;
-    public ?string $stateTaxTotal = null;
-    public ?string $details = null;
-    public ?string $shipMethods = null;
-    public ?string $warnings = null;
+    public ?float $shippingTax = null;
+    public ?float $orderTax = null;
+    public ?float $fedTaxTotal = null;
+    public ?float $stateTaxTotal = null;
+    public array $details = [];
+    public array $shipMethods = [];
+    public array $warnings = [];
     public ?string $trace = null;
-    public ?string $handlingFeeTotal = null;
+    public ?float $handlingFeeTotal = null;
 }

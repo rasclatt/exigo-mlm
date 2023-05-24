@@ -8,9 +8,19 @@ class Cache
      *	@description	
      *	@param	
      */
-    public function __construct(string $cacheDir)
+    public function __construct(string $cacheDir = null)
+    {
+        if($cacheDir)
+            $this->setRootDir($cacheDir);
+    }
+    /**
+     *	@description	
+     *	@param	
+     */
+    public function setRootDir(string $cacheDir): self
     {
         $this->cacheDir = $cacheDir;
+        return $this;
     }
     /**
      *	@description	Fetch the contents of a previously stored json response
