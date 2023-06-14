@@ -215,6 +215,9 @@ class Customer extends \Exigo\Model
      **/
     public function loginNameExists(string $username): bool
     {
-        return $this->db->query("SELECT COUNT(*) as count FROM Customers WHERE LoginName = ?", [$username])->getResults(1)['count'] > 0;
+        return $this->db->query(
+            "SELECT COUNT(*) as count FROM CustomerSites WHERE WebAlias = ?",
+            [ $username ]
+        )->getResults(1)['count'] > 0;
     }
 }

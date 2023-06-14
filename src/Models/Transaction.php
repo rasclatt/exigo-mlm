@@ -4,7 +4,15 @@ namespace Exigo\Models;
 class Transaction extends \Exigo\Model
 {
     private array $transactionRequests = [];
-    protected string $service = 'transaction';
+    protected string $baseService = '/transaction';
+    /**
+     * @description 
+     **/
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setService($this->baseService);
+    }
     /**
      * @description Add to the transaction array
      **/
@@ -14,6 +22,9 @@ class Transaction extends \Exigo\Model
             'typeName' => $actionName,
             'request' => $data
         ];
+        $this->setBody([
+            'transactionRequests' => $this->getTransactionData()
+        ]);
         return $this;
     }
     /**
@@ -23,7 +34,9 @@ class Transaction extends \Exigo\Model
     {
         if(isset($this->transactionRequests[$actionName]))
             unset($this->transactionRequests[$actionName]);
-
+        $this->setBody([
+            'transactionRequests' => $this->getTransactionData()
+        ]);
         return $this;
     }
     /**
@@ -31,7 +44,7 @@ class Transaction extends \Exigo\Model
      **/
     public function send()
     {
-        return $this->toPost($this->service, [
+        return $this->toPost($this->baseService, [
             'transactionRequests' => $this->getTransactionData()
         ]);
     }

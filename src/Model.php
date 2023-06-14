@@ -17,6 +17,7 @@ class Model
     private $body;
     private $endpoint;
     protected IDatabase $db;
+    private array $data;
     
     private Guzzle $http;
     /**
@@ -52,7 +53,7 @@ class Model
      *	@description	    Allows the user to reset the endpoint fully
      *	@param	$endpoint   Path of the endpoint
      */
-    protected function overWriteEndpoint(string $endpoint)
+    public function overWriteEndpoint(string $endpoint)
     {
         $this->endpoint = rtrim($endpoint, '/');
         return $this;
@@ -116,18 +117,34 @@ class Model
         return $this->transmit(__FUNCTION__);
     }
     /**
+     * @description 
+     **/
+    protected function assembleData()
+    {
+        $this->data = [
+            implode(' ', [ $this->auth_type, EXIGO_APIKEY ]),
+            'https://'.$this->getEndpoint(),
+            $this->body
+        ];
+        return $this;
+    }
+    /**
+     * @description 
+     **/
+    public function getAssembledData()
+    {
+        $this->assembleData();
+        return $this->data;
+    }
+    /**
      *	@description	
      *	@param	
      */
     private function transmit(string $type)
     {
-        $data = [
-            implode(' ', [ $this->auth_type, EXIGO_APIKEY ]),
-            'https://'.$this->getEndpoint(),
-            $this->body,
-            strtoupper($type)
-        ];
-        return $this->curl(...$data);
+        $this->assembleData();
+        $this->data[]  = strtoupper($type);
+        return $this->curl(...$this->data);
     }
     /**
      *	@description	
