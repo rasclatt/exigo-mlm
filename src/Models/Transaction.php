@@ -6,7 +6,7 @@ class Transaction extends \Exigo\Model
     private array $transactionRequests = [];
     protected string $service = 'transaction';
     /**
-     * @description 
+     * @description Add to the transaction array
      **/
     public function add(string $actionName, array $data): self
     {
@@ -17,7 +17,7 @@ class Transaction extends \Exigo\Model
         return $this;
     }
     /**
-     * @description 
+     * @description Removes a transaction object from the transaction array
      **/
     public function remove(string $actionName): self
     {
@@ -27,12 +27,19 @@ class Transaction extends \Exigo\Model
         return $this;
     }
     /**
-     * @description 
+     * @description Send the transaction via post
      **/
     public function send()
     {
         return $this->toPost($this->service, [
-            'transactionRequests' => array_values($this->transactionRequests)
+            'transactionRequests' => $this->getTransactionData()
         ]);
+    }
+    /**
+     * @description Returns the transaction data for review
+     **/
+    public function getTransactionData(): array
+    {
+        return array_values($this->transactionRequests);
     }
 }
