@@ -38,7 +38,7 @@ class Request extends \SmartDto\Dto
     public ?string $overwriteExistingOrder = null;
     public ?int $existingOrderID = null;
     public ?int $partyID = null;
-    public ?string $details = null;
+    public ?array $details = [];
     public ?string $suppressPackSlipPrice = null;
     public ?string $transferVolumeToKey = null;
     public ?string $returnOrderKey = null;

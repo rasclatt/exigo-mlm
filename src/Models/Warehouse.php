@@ -29,7 +29,8 @@ class Warehouse extends \Exigo\Model
                 s.DisplayOnWeb,
                 s.ShipCarrierID,
                 s.ShipMethodID,
-                s.ShipMethodDescription AS Title
+                s.ShipMethodDescription AS Title,
+                s.DisplayOnWeb
             FROM
                 Warehouses w
             INNER JOIN

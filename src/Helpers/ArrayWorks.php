@@ -65,4 +65,30 @@ class ArrayWorks
             }
         }
     }
+    /**
+     * @description 
+     **/
+    public static function capitalizeKeys(array $array)
+    {
+        $new = [];
+        foreach($array as $i => $row) {
+            foreach($row as $k => $v) {
+                $new[$i][!is_numeric($k)? ucfirst($k) : $k] = is_array($v)? self::capitalizeKeys($v) : $v;
+            }
+        }
+        return $new;
+    }
+    /**
+     * @description 
+     **/
+    public static function lowerCaseKeys(array $array)
+    {
+        $new = [];
+        foreach($array as $i => $row) {
+            foreach($row as $k => $v) {
+                $new[$i][!is_numeric($k)? lcfirst($k) : $k] = is_array($v)? self::capitalizeKeys($v) : $v;
+            }
+        }
+        return $new;
+    }
 }

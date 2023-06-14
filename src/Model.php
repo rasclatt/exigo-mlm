@@ -49,6 +49,15 @@ class Model
         return $this;
     }
     /**
+     *	@description	    Allows the user to reset the endpoint fully
+     *	@param	$endpoint   Path of the endpoint
+     */
+    protected function overWriteEndpoint(string $endpoint)
+    {
+        $this->endpoint = rtrim($endpoint, '/');
+        return $this;
+    }
+    /**
      *	@description	
      *	@param	
      */

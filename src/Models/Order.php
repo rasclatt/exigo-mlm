@@ -27,4 +27,27 @@ class Order extends \Exigo\Model
     {
         return new CreateOrderResponse($this->toPost($this->baseService, $request));
     }
+    /**
+     * @description Fetches previous addresses used in orders
+     **/
+    public function getAddresses(int $customerID): array
+    {
+        return array_map(
+            fn($v) => new \Exigo\Dto\Order\GetAddresses\Response($v),
+            $this->db
+                ->query("SELECT DISTINCT Address1, Address2, City, State, Zip FROM Orders WHERE CustomerID = ?", [ $customerID ])
+                ->getResults()
+        );
+    }
+    /**
+     * @description 
+     **/
+    public function getOrderStatuses(): array
+    {
+        $data = $this->db->query("SELECT * FROM OrderStatuses")->getResults();
+        foreach($data as $row) {
+            $new[$row['OrderStatusID']] = $row['OrderStatusDescription'];
+        }
+        return $new;
+    }
 }

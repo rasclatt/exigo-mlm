@@ -234,4 +234,13 @@ class Product extends \Exigo\Model
         }
         $product['Options'] = !empty($p['ItemID'])? $this->getItemMembers($p['ItemID']) : [];
     }
+    /**
+     * @description 
+     **/
+    public function getProductColumnsBySku(string $ItemCode, array | string $columnName)
+    {
+        if(!is_array($columnName))
+            $columnName = [$columnName];
+        return $this->db->query("SELECT ".implode(",", $columnName)." FROM Items WHERE ItemCode = ?", [$ItemCode])->getResults(count($columnName));
+    }
 }
