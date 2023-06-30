@@ -203,15 +203,29 @@ class Product extends \Exigo\Model
     /**
      * @description 
      **/
-    public function getItemMembers(int $ItemID)
+    public function getItemCodesByDescription(
+        string $type,
+        string $column = 'ShortDetail3'
+    )
+    {
+        $items = [];
+        foreach($this->db->query("SELECT ItemCode FROM Items WHERE {$column} LIKE ?", ["%{$type}%"])->getResults() as $item) {
+            $items[] = $this->getProduct($item['ItemCode'], 1);
+        }
+        return $items;
+    }
+    /**
+     * @description 
+     **/
+    public function getItemMembers(string $ItemCode)
     {
         return $this->db->query(
             "SELECT ".implode(',', $this->colList)."
             FROM Items i
             JOIN ItemGroupMembers igm ON i.ItemID = igm.ItemID
             JOIN ItemGroupMembers igmt ON igmt.MasterItemID = igm.MasterItemID
-            WHERE igmt.ItemID = ?
-            ORDER BY igmt.Priority ASC", [$ItemID]
+            WHERE igmt.ItemID = (SELECT ItemID FROM Items ib WHERE ib.ItemCode = ?)
+            ORDER BY igmt.Priority ASC", [ $ItemCode ]
         )->getResults();
     }
     /**
@@ -232,7 +246,9 @@ class Product extends \Exigo\Model
         foreach($p as $row) {
             $product['PricesAll'][StringWorks::wordToAbbrev($row['PriceType'])] = $row;
         }
-        $product['Options'] = !empty($p['ItemID'])? $this->getItemMembers($p['ItemID']) : [];
+        $product['Options'] = $this->getItemMembers($itemCode);
+        if(!is_array($product['Options']))
+        $product['Options'] = [];
     }
     /**
      * @description 

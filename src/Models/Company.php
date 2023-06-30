@@ -15,8 +15,10 @@ class Company extends \Exigo\Model
     /**
      * @description 
      **/
-    public function getCountries():array
+    public function getCountries(array $countries = null): array
     {
-        return $this->db->query("SELECT CountryCode as code, CountryDescription as name FROM Countries ORDER BY Priority ASC")->getResults();
+        $sql = (!empty($countries))? " WHERE CountryCode IN (".implode(',', array_fill(0, count($countries), '?')).")" : "";
+        $bind = (!empty($countries))? $countries : null;
+        return $this->db->query("SELECT CountryCode as code, CountryDescription as name FROM Countries {$sql} ORDER BY Priority ASC", $bind)->getResults();
     }
 }

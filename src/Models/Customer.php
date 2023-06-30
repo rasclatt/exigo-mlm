@@ -211,7 +211,7 @@ class Customer extends \Exigo\Model
             ->getResults(1)['count'] > 0;
     }
     /**
-     * @description 
+     * @description Checks if a webalias is already being usein
      **/
     public function loginNameExists(string $username): bool
     {
@@ -219,5 +219,15 @@ class Customer extends \Exigo\Model
             "SELECT COUNT(*) as count FROM CustomerSites WHERE WebAlias = ?",
             [ $username ]
         )->getResults(1)['count'] > 0;
+    }
+    /**
+     * @description Fetches the CustomerID based on their webalias
+     **/
+    public function getCustomerIdFromWebAlias(string $uname):? int
+    {
+        return $this->db->query(
+            "SELECT CustomerID as cid FROM CustomerSites WHERE WebAlias = ?",
+            [ $uname ]
+        )->getResults(1)['cid']?? null;
     }
 }

@@ -19,6 +19,8 @@ class Request extends \SmartDto\Dto
     public ?string $city = null;
     public ?string $zip = null;
     public ?string $county = null;
+    public ?string $country = null;
+    public ?string $state = null;
     public ?string $email = null;
     public ?string $phone = null;
     public ?string $notes = null;
