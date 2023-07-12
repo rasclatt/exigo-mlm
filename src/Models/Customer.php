@@ -99,7 +99,7 @@ class Customer extends \Exigo\Model
      */
     public function createCustomer(CreateCustomerRequest $request): CreateCustomerResponse
     {
-        return new CreateCustomerResponse($this->toPost("{$this->baseService}/authenticate", $request));
+        return new CreateCustomerResponse($this->toPost($this->baseService, $request));
     }
 
     public function getByUsername(
@@ -216,8 +216,18 @@ class Customer extends \Exigo\Model
     public function loginNameExists(string $username): bool
     {
         return $this->db->query(
-            "SELECT COUNT(*) as count FROM CustomerSites WHERE WebAlias = ?",
+            "SELECT COUNT(*) as count FROM Customers WHERE LoginName = ?",
             [ $username ]
+        )->getResults(1)['count'] > 0;
+    }
+    /**
+     * @description Checks if a webalias is already being usein
+     **/
+    public function distIdExists(int $distid, string $column = 'CustomerID'): bool
+    {
+        return $this->db->query(
+            "SELECT COUNT(*) as count FROM Customers WHERE {$column} = ?",
+            [ $distid ]
         )->getResults(1)['count'] > 0;
     }
     /**
@@ -229,5 +239,18 @@ class Customer extends \Exigo\Model
             "SELECT CustomerID as cid FROM CustomerSites WHERE WebAlias = ?",
             [ $uname ]
         )->getResults(1)['cid']?? null;
+    }
+    /**
+     * @description 
+     **/
+    public function getCustomerByCustomerID(int $customerID)
+    {
+        $id = $this->db->query("SELECT LoginName FROM Customers WHERE CustomerID = ?", [$customerID])->getResults(1)['LoginName']?? null;
+
+        if(!$id) {
+            return [];
+        }
+
+        return $this->getByUsername($id);
     }
 }

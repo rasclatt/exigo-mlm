@@ -161,6 +161,7 @@ class Model
         $ch = curl_init();
         # Add some base options
         $options = [
+            CURLOPT_CUSTOMREQUEST => strtoupper($method),
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => true,
@@ -254,6 +255,15 @@ class Model
         if($body instanceof \SmartDto\Dto)
             $body = $body->toArray();
         return $this->setService($service.(!empty($body)? $this->toQueryString(Helpers\ArrayWorks::trimAll($body)) : ''))->get();
+    }
+    /**
+     *	@description	Shortcut update method to remove some DRYness
+     */
+    public function toPatch(string $service, $body)
+    {
+        return $this->setService($service)
+        ->setBody(Helpers\ArrayWorks::trimAll(($body instanceof \SmartDto\Dto)? $body->toArray() : $body))
+        ->patch();
     }
 
     public function connect(IDatabase $db): self

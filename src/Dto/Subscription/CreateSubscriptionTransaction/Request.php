@@ -3,6 +3,7 @@ namespace Exigo\Dto\Subscription\CreateSubscriptionTransaction;
 
 class Request extends \SmartDto\Dto
 {
+    public ?int $customerID;
     public ?int $frequency = 8;
     public ?string $startDate;
     public ?string $stopDate;

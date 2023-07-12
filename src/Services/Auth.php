@@ -17,12 +17,11 @@ class Auth extends \Exigo\Models\Customer
     ): AuthResponse
     {
         # Fetch id from database
-        if(!is_numeric($loginName)) {
-            # Get if not numeric
-            $cid = ($loginName == 'corp')? self::$defaultCorpId : $this->getIdFromUsername($loginName);
+        if(is_numeric($loginName)) {
+            $u = $this->getCustomer($loginName);
+            $cid = $u->loginName?? null;
         } else {
-            # Just pass to fetch
-            $cid = (int) $loginName;
+            $cid = $loginName;
         }
         # Stop if there is no username
         if(!$cid)
