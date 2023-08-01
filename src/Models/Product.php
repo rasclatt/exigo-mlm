@@ -151,6 +151,7 @@ class Product extends \Exigo\Model
                     SELECT PriceTypeID FROM PriceTypes WHERE PriceTypeDescription = ?
                 )
             WHERE wci.WebCategoryID IN (".implode(',', array_fill(0, count($categoryIds), '?')).")
+            ORDER BY wci.SortOrder ASC
             ",
             array_merge([$currencyCode, $priceType], $categoryIds))
         ->getResults();

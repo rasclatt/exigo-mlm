@@ -253,4 +253,14 @@ class Customer extends \Exigo\Model
 
         return $this->getByUsername($id);
     }
+    /**
+     * @description Fetches the users customer id name from their login name
+     **/
+    public function getCustomerIdFromLoginName(string $username):? string
+    {
+        return $this->db->query(
+            "SELECT CustomerID FROM Customers WHERE LoginName = ?",
+            [ $username ]
+        )->getResults(1)['CustomerID']?? null;
+    }
 }
